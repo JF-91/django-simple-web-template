@@ -1,6 +1,96 @@
-{% extends "base.html" %}
-{% block title %} {{title}} {% endblock title %}
-
+{% extends "base.html" %} {% load static %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
+{% endblock extra_css %} {% block title %}{{ page.title }}{% endblock title %}
 {% block content %}
-    <p>{{page.content|safe}}</p>
+<article class="container mx-auto px-4 py-8">
+  {% for header in header_images %}
+  <div class="mb-8">
+    <img
+      class="w-full h-96 object-cover rounded-lg shadow-lg"
+      src="{{ header.image.url }}"
+      alt="{{ header.alt_text }}"
+    />
+  </div>
+  {% endfor %}
+
+  <h1 class="text-4xl font-bold mb-8">{{ page.title }}</h1>
+
+  <div class="prose max-w-none mb-12">{{ page.content|safe }}</div>
+
+  {% if banner_blocks %}
+  <div class="space-y-12 mb-12">
+    {% for banner in banner_blocks %}
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div
+        class="flex flex-col {% if banner.image_position == 'LEFT' %}md:flex-row{% else %}md:flex-row-reverse{% endif %}"
+      >
+        <div class="md:w-1/2">
+          <img
+            src="{{ banner.image.url }}"
+            alt="{{ banner.alt_text }}"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="md:w-1/2 p-8">
+          <h2 class="text-3xl font-semibold mb-4">{{ banner.title }}</h2>
+          <div class="prose max-w-none">{{ banner.content|safe }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %} {% if slider_blocks %} {% for slider in slider_blocks %}
+  <div class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">{{ slider.title }}</h2>
+    <div class="swiper mySwiper-{{ forloop.counter }}">
+      <div class="swiper-wrapper">
+        {% for slide in slider.images.all %}
+        <div class="swiper-slide">
+          <img
+            src="{{ slide.image.url }}"
+            alt="{{ slide.alt_text }}"
+            class="w-full h-[500px] object-cover rounded-lg"
+          />
+        </div>
+        {% endfor %}
+      </div>
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+  </div>
+  {% endfor %} {% endif %}
+</article>
 {% endblock content %}
+{% block extra_js %} 
+{% comment %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+{% endcomment %}
+<script src="{% static 'js/swiper.js' %}"></script>
+<script>
+  {% if slider_blocks %}
+    {% for slider in slider_blocks %}
+    new Swiper(".mySwiper-{{ forloop.counter }}", {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+        },
+        navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+        },
+        autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+        },
+    });
+    {% endfor %}
+  {% endif %}
+</script>
+{% endblock extra_js %}
