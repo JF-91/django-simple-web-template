@@ -1,8 +1,44 @@
 {% extends "base.html" %}
+ {% load static %} 
+ {% block title %}{{title}}{% endblock title %}
+ {% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-4xl font-bold mb-8 text-center">Bienvenidos</h1>
 
-{% block title %}{{title}}{% endblock title %}
-
-{% block content %}
-    <h1>Home</h1>
-    <p>Welcome to the home page!</p>
+  <div class="space-y-12">
+    {% for block in blocks %} {% if block.block_type == 'BANNER' %}
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="flex md:flex-row">
+        <div class="md:w-1/2">
+          <img
+            src="{{ block.image.url }}"
+            alt="{{ block.alt_text }}"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="md:w-1/2 p-8">
+          <h2 class="text-3xl font-semibold mb-4">{{ block.title }}</h2>
+          <div class="prose max-w-none">{{ block.content|safe }}</div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <img
+        src="{{ block.image.url }}"
+        alt="{{ block.alt_text }}"
+        class="w-full h-64 object-cover"
+      />
+      <div class="p-6">
+        <h3 class="text-2xl font-semibold mb-4">{{ block.title }}</h3>
+        <div class="prose max-w-none">{{ block.content|safe }}</div>
+      </div>
+    </div>
+    {% endif %} {% empty %}
+    <p class="text-center text-gray-600">
+      No hay bloques de contenido disponibles.
+    </p>
+    {% endfor %}
+  </div>
+</div>
 {% endblock content %}
