@@ -90,3 +90,14 @@ class SliderImage(models.Model):
 
     def __str__(self):
         return f"Imagen {self.order} de {self.slider.title}"
+
+class QuoteBlock(models.Model):
+    title = models.CharField(max_length=200, verbose_name='Título')
+    content = models.TextField(verbose_name='Contenido')
+    image = models.ImageField(upload_to='images', verbose_name='Imagen')
+    alt_text = models.CharField(max_length=200, verbose_name='Texto alternativo')
+    pages = models.ManyToManyField(Page, related_name='quote_blocks')
+
+    class Meta:
+        verbose_name = 'Bloque de Quote'
+        verbose_name_plural = 'Bloques de Quote'
