@@ -1,6 +1,13 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from .models import Page, ImagePageHeader, HomeBlock, SliderBlock, BannerBlock, SliderImage
+from .models import Page, ImagePageHeader, HomeBlock, SliderBlock, BannerBlock, SliderImage, QuoteBlock
+
+class QuoteBlockInline(admin.StackedInline):
+    model = QuoteBlock.pages.through
+    extra = 1
+    verbose_name = "Bloque de Quote"
+    verbose_name_plural = "Bloques de Quote"
+    autocomplete_fields = ['quoteblock']
 
 class ImagePageHeaderInline(admin.StackedInline):
     model = ImagePageHeader.pages.through
@@ -42,7 +49,7 @@ class PageAdmin(admin.ModelAdmin):
     list_filter = ['status', 'created_at']
     search_fields = ['title', 'content']
     prepopulated_fields = {'slug': ('title',)}
-    inlines = [ImagePageHeaderInline, SliderBlockInline, BannerBlockInline]
+    inlines = [ImagePageHeaderInline, SliderBlockInline, BannerBlockInline, QuoteBlockInline]
 
 @admin.register(HomeBlock)
 class HomeBlockAdmin(admin.ModelAdmin):
@@ -116,3 +123,15 @@ class BannerBlockAdmin(admin.ModelAdmin):
         return "No image"
     admin_image.short_description = 'Preview'
 
+@admin.register(QuoteBlock)
+class QuoteBlockAdmin(admin.ModelAdmin):
+    list_display = ['title', 'admin_image']
+    search_fields = ['title']
+    exclude = ['pages']
+    readonly_fields = ['admin_image']
+
+    def admin_image(self, obj):
+        if obj.image:
+            return mark_safe(f'<img src="{obj.image.url}" width="100" />')
+        return "No image"
+    admin_image.short_description = 'Preview'
